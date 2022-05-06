@@ -3,11 +3,10 @@ from client.gboozy_client import GboozyClient
 from commands.CommandErrorHandler import CommandErrHandler
 from commands.Music import Music
 from commands.StalkListener import StalkListener
-import dotenv
 
 
 def main():
-    token = dotenv.get_key(".ENV", "DISCORD_TOKEN")
+    token = "OTcwMzg4OTk0MTEyMjMzNTky.Ym7PLQ.z8SsiIcQpwQ0vdsVXwv1RNJGZK4"
 
     intents = discord.Intents.default()
     intents.members = True

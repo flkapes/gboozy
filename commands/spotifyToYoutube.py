@@ -1,5 +1,4 @@
 from collections import deque
-import dotenv
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 import urllib.request

@@ -65,7 +65,7 @@ class Music(commands.Cog, name="MusicModule"):
     @commands.command()
     async def playNext(self, ctx: discord.ext.commands.Context, *, url=""):
         info = ""
-        if self.loop:
+        if self.loop == True:
             vc = discord.utils.get(self.bot.voice_clients, guild=ctx.guild)
             player = await Music.from_url(self, ctx=ctx, url=self.lastLoopedSong, loop=None, stream=True)
             self.musicQueue.appendleft(self.lastLoopedSong)
