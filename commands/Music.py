@@ -84,8 +84,8 @@ class Music(commands.Cog, name="MusicModule"):
             await asyncio.sleep(0.5)
             vc.resume()
             info = ytdl.extract_info(meow, download=False)
-            playingMessage = await Music.updateMessage(self, ctx, meow, self.playingMessage)
-            self.playingMessage = playingMessage
+            #playingMessage = await Music.updateMessage(self, ctx, meow, self.playingMessage)
+            #self.playingMessage = playingMessage
             while vc.is_playing():
                 await self.stop()
             vc.play(player, after=lambda e: asyncio.run(self.playNext(ctx)))
@@ -99,8 +99,8 @@ class Music(commands.Cog, name="MusicModule"):
             await asyncio.sleep(0.5)
             vc.resume()"""
             info = ytdl.extract_info(meow, download=False)
-            playingMessage = await Music.updateMessage(self, ctx, meow, self.playingMessage)
-            self.playingMessage = playingMessage
+            #playingMessage = await Music.updateMessage(self, ctx, meow, self.playingMessage)
+            #self.playingMessage = playingMessage
 
             while vc.is_playing():
                 ctx.voice_client.stop()
@@ -189,12 +189,12 @@ class Music(commands.Cog, name="MusicModule"):
         logger.info("Playback resumed.")
         await ctx.send(f'Resumed playback.')
 
-    async def updateMessage(self, ctx: discord.ext.commands.Context, newURL, message):
+    """async def updateMessage(self, ctx: discord.ext.commands.Context, newURL, message):
         info = ytdl.extract_info(newURL, download=False)
         await asyncio.get_event_loop().run_in_executor(None, await self.playingMessage.delete())
 
         await asyncio.get_event_loop().run_in_executor(None, await ctx.send(
-            f'**Now playing: {info["title"]}** - `{str(timedelta(seconds=info["duration"]))[2:]}`\n{newURL}'))
+            f'**Now playing: {info["title"]}** - `{str(timedelta(seconds=info["duration"]))[2:]}`\n{newURL}'))"""
 
     @commands.command()
     async def skip(self, ctx: commands.Context):
