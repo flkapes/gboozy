@@ -18,6 +18,67 @@ track_len = {}
 debug = True
 
 
+class LLVoiceClient(discord.VoiceClient):
+    def __init__(self, client: discord.Client, channel: discord.abc.Connectable):
+        self.client = client
+        self.channel = channel
+
+        if not hasattr(self.client, "lavalink"):
+            self.lavalink = self.client.lavalink
+        else:
+            self.client.lavalink = lavalink.Client(client.user.id)
+            with open("config.json", "r") as read:
+                server = json.load(read)['servers'][str(0)]
+                try:
+                    self.client.lavalink.add_node(
+                        server["host"],
+                        server["port"],
+                        server["password"],
+                        server["region"],
+                        server["name"],
+                    )
+                    self.lavalink = self.client.lavalink
+                except (
+                    lavalink.NodeException,
+                    lavalink.exceptions.Unauthorized,
+                ) as ce:
+                    if isinstance(ce, lavalink.NodeException):
+                        logger.warning(
+                            f"Node {server['host']}:{server['port']} is offline or refusing connections."
+                        )
+                    elif isinstance(ce, lavalink.exceptions.Unauthorized):
+                        logger.warning(
+                            f"Connections to node {server['host']}:{server['port']}"
+                            f" are failing due to incorrect credentials. "
+                        )
+
+    async def on_voice_server_update(self, data):
+        lavalink_data = {
+            't': 'VOICE_SERVER_UPDATE',
+            'd': data
+        }
+        await self.lavalink.voice_update_handler(lavalink_data)
+
+    async def on_voice_state_update(self, data):
+        lavalink_data = {
+            't': 'VOICE_STATE_UPDATE',
+            'd': data
+        }
+        await self.lavalink.voice_update_handler(lavalink_data)
+
+    async def connect(self, *, timeout: float, reconnect: bool, self_deaf: bool = True, self_mute: bool = False):
+        self.lavalink.player_manager.create(guild_id=self.channel.guild.id)
+        await self.channel.guild.change_voice_state(channel=self.channel, self_mute=self_mute, self_deaf=self_deaf)
+
+    async def disconnect(self, *, force: bool = False) -> None:
+        player = self.lavalink.player_manager.get(self.channel.guild.id)
+        if not force and not player.is_connected:
+            return
+        await self.channel.guild.change_voice_state(channel=None)
+        player.channel_id = None
+        self.cleanup()
+
+
 class MusicNew(commands.Cog):
     def __init__(self, bot: discord.ext.commands.Bot):
         self.bot = bot
@@ -63,20 +124,6 @@ class MusicNew(commands.Cog):
         lavalink.enable_debug_logging()
         lavalink.add_event_hook(self.onTrackEnd)
         lavalink.add_event_hook(self.onTrackException)
-
-    @staticmethod
-    def _lavalinkInit(
-        bot: discord.ext.commands.Bot,
-        host: str,
-        port: int,
-        password: str,
-        region: str,
-        node_name: str,
-    ) -> None:
-        bot.lavalink.add_node(
-            host=host, port=port, region=region, password=password, name=node_name
-        )
-        bot.add_listener(bot.lavalink.voice_update_handler, "on_socket_response")
 
     async def updatePlayingMessage(self, ctx, change):
         player = self.bot.lavalink.player_manager.get(ctx.guild.id)
