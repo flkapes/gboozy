@@ -6,7 +6,7 @@ from commands.StalkListener import StalkListener
 
 
 def main():
-    token = "OTcwMzg4OTk0MTEyMjMzNTky.Ym7PLQ.z8SsiIcQpwQ0vdsVXwv1RNJGZK4"
+    token = "token"
 
     intents = discord.Intents.default()
     intents.members = True
