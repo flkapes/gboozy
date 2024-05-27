@@ -11,7 +11,7 @@ def getTracks(playlistURL):
     # Creating and authenticating our Spotify app.
 
     client_credentials_manager = SpotifyClientCredentials(
-        "e0aeec28e650456284327850633f8cc0", "1e8cedc2abf043088aa5ca255f27ac68")
+        "", "")
     spotify = spotipy.Spotify(
         client_credentials_manager=client_credentials_manager)
 
